@@ -1,5 +1,5 @@
 /**
- * Bake favicon / PWA icons: the Easy Items pouch (16×16, same art as the suite logo) on a teak tile.
+ * Bake favicon / PWA icons: the Easy Items pouch (16×16, same art and bronze #c48a4a accent as the suite logo) on a teak tile.
  * Usage: npx tsx scripts/write-icons.mts
  */
 import { mkdir, writeFile } from "node:fs/promises";
@@ -14,10 +14,10 @@ const PAL: Record<string, [number, number, number, number]> = {
   ".": [0, 0, 0, 0],
   s: [46, 32, 20, 255],
   k: [13, 9, 6, 255],
-  a: [156, 197, 74, 255],
-  l: [210, 236, 150, 255],
-  d: [97, 122, 46, 255],
-  c: [255, 210, 122, 255],
+  a: [196, 138, 74, 255],
+  l: [255, 202, 122, 255],
+  d: [121, 85, 45, 255],
+  c: [255, 226, 150, 255],
   y: [185, 116, 31, 255],
 };
 /** Same pouch as the brand logo (easy-suite-brand/items_v2.py), framed. */
