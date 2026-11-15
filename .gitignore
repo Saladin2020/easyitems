@@ -1,0 +1,16 @@
+node_modules/
+dist/
+web/dist/
+.scratch/
+# workspace data when the repo itself is used as the workspace
+/items/
+/quests/
+
+/exports/
+/easyitems.config.json
+*.log
+.DS_Store
+.env
+.env.*
+.cursor/
+*.local.json
