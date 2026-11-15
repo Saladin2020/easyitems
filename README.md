@@ -25,6 +25,7 @@
   <a href="https://github.com/Saladin2020/easyanim"><img src="docs/brand/logo-anim-96.png" width="32" alt="Easy Anim" title="Easy Anim" /></a>
   <a href="https://github.com/Saladin2020/easyitems"><img src="docs/brand/logo-items-96.png" width="40" alt="Easy Items" title="Easy Items (this repo)" /></a>
   <a href="https://github.com/Saladin2020/easysave"><img src="docs/brand/logo-save-96.png" width="32" alt="Easy Save" title="Easy Save" /></a>
+  <a href="https://github.com/Saladin2020/easykit"><img src="docs/brand/logo-kit-96.png" width="32" alt="Easy Kit" title="Easy Kit" /></a>
 </p>
 <!-- easy-suite:header:end -->
 
@@ -159,9 +160,9 @@ node scripts/render-docs.mjs                              # contact sheets
 
 <img src="docs/brand/logo-suite-96.png" width="48" align="right" alt="Easy Suite" />
 
-Twelve small, local-first tools that share one look (teak, lantern gold, Kanit, 16/48px pixels), one
+Thirteen small, local-first tools that share one look (teak, lantern gold, Kanit, 16/48px pixels), one
 workflow (CLI · web editor · MCP server) and the same targets (**Godot 4.3+** and **PixiJS v8**).
-ชุดเครื่องมือทำเกมพิกเซลสไตล์ไทย ใช้ร่วมกันได้ทั้งชุด  
+ชุดเครื่องมือทำเกมพิกเซลสไตล์ไทย ใช้ร่วมกันได้ทั้งชุด · **Easy Kit** builds a whole playable game from the other twelve.  
 The samples share one multicultural southern Thai village: Buddhist temple, wooden kampung mosque and
 Chinese-Thai shrine on the same street. หมู่บ้านพหุวัฒนธรรม วัด มัสยิด ศาลเจ้า อยู่ร่วมกันในเมืองเดียว
 
@@ -179,6 +180,7 @@ Chinese-Thai shrine on the same street. หมู่บ้านพหุวั�
 | <img src="docs/brand/logo-anim-96.png" width="40" alt="" /> | [**Easy Anim**](https://github.com/Saladin2020/easyanim) | Cutscene timelines: actors, camera, dialogue, FX and music cues; Godot + Pixi runners. | [`easyanim`](https://github.com/Saladin2020/easyanim) |
 | <img src="docs/brand/logo-items-96.png" width="40" alt="" /> | **Easy Items** ← you are here | Item database, shops, inventory, loot tables and crafting; 44 starter items with pixel icons. | [`easyitems`](https://github.com/Saladin2020/easyitems) |
 | <img src="docs/brand/logo-save-96.png" width="40" alt="" /> | [**Easy Save**](https://github.com/Saladin2020/easysave) | Versioned save slots with migrations and checksums; Thai / English / Malay string tables. | [`easysave`](https://github.com/Saladin2020/easysave) |
+| <img src="docs/brand/logo-kit-96.png" width="40" alt="" /> | [**Easy Kit**](https://github.com/Saladin2020/easykit) | One command drives all 12 tools into a playable Godot 4.3+ and PixiJS game; unified MCP server and `doctor`. | [`easykit`](https://github.com/Saladin2020/easykit) |
 
 ### Works with
 
