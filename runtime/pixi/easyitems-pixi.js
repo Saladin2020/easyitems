@@ -6,7 +6,7 @@
  *   const panel = items.shopPanel("market", { lang: "th" }); app.stage.addChild(panel);
  *   items.inventory.buy("market", "thai_tea"); items.icon("mango") // PIXI.Sprite
  */
-import { Inventory, rollLoot } from "./easyitems-core.js";
+import { Inventory, LifeSkills, rollLoot } from "./easyitems-core.js";
 
 export { Inventory, rollLoot };
 
@@ -25,6 +25,8 @@ export async function loadItems(PIXI, url = "easyitems.json", opts = {}) {
   const textures = {};
   for (const [name, f] of Object.entries(data.atlas.frames)) textures[name] = new PIXI.Texture({ source: tex.source, frame: new PIXI.Rectangle(f.x, f.y, f.w, f.h) });
   const inventory = new Inventory(data.db, opts.state);
+  /** Farming / fishing / cooking XP + levels (opts.life restores a saved life.state). */
+  const life = new LifeSkills(data.db, inventory, opts.life);
   const font = opts.fontFamily ?? "Kanit, 'Noto Sans Thai', sans-serif";
   const iconSize = data.atlas.size;
 
@@ -177,5 +179,5 @@ export async function loadItems(PIXI, url = "easyitems.json", opts = {}) {
     return root;
   }
 
-  return { db: data.db, atlas: data.atlas, inventory, textures, texture, icon, shopPanel, rollLoot: (id, seed) => rollLoot(data.db, id, seed) };
+  return { db: data.db, atlas: data.atlas, inventory, life, textures, texture, icon, shopPanel, rollLoot: (id, seed) => rollLoot(data.db, id, seed) };
 }

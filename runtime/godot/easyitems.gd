@@ -9,6 +9,7 @@ extends Node
 
 signal changed
 signal coins_changed(coins: int)
+signal skill_level_up(skill: String, level: int)
 
 const DB_PATH := "res://easyitems/db.json"
 
@@ -18,6 +19,8 @@ var shops: Dictionary = {}
 var recipes: Dictionary = {}
 var loot_tables: Dictionary = {}
 var state: Dictionary = {}
+## Life skills: { xp: { skill: int }, plots: { plot: { crop, planted, water, last } } } — save with life_to_dict().
+var life: Dictionary = {"xp": {}, "plots": {}}
 
 
 func _ready() -> void:
@@ -462,3 +465,178 @@ func loot(table_id: String, seed: int) -> Dictionary:
 	if lost.size() > 0:
 		return _fail("inventory_full:" + ",".join(PackedStringArray(lost)))
 	return _ok({"items": got})
+
+
+# ---------- life skills (same rules as src/shared/skills.ts and LifeSkills in easyitems-core.js) ----------
+func _find(list_key: String, id: String) -> Variant:
+	for x in db.get(list_key, []):
+		if x["id"] == id:
+			return x
+	return null
+
+
+func xp_for_level(sk, level: int) -> int:
+	var base := 20 if sk == null else int(sk.get("xpBase", 20))
+	return base * (level - 1) * level / 2
+
+
+func skill_xp(id: String) -> int:
+	return int(life["xp"].get(id, 0))
+
+
+func skill_level(id: String) -> int:
+	var sk = _find("skills", id)
+	var mx := 10 if sk == null else int(sk.get("maxLevel", 10))
+	var xp := skill_xp(id)
+	var l := 1
+	while l < mx and xp >= xp_for_level(sk, l + 1):
+		l += 1
+	return l
+
+
+## { level, xp, into, need } for an XP bar.
+func skill_progress(id: String) -> Dictionary:
+	var sk = _find("skills", id)
+	var mx := 10 if sk == null else int(sk.get("maxLevel", 10))
+	var lv := skill_level(id)
+	var lo := xp_for_level(sk, lv)
+	return {"level": lv, "xp": skill_xp(id), "into": skill_xp(id) - lo, "need": 0 if lv >= mx else xp_for_level(sk, lv + 1) - lo}
+
+
+func gain_xp(id: String, n: int) -> Dictionary:
+	var before := skill_level(id)
+	life["xp"][id] = skill_xp(id) + n
+	var lv := skill_level(id)
+	if lv > before:
+		skill_level_up.emit(id, lv)
+	return {"skill": id, "xp": n, "level": lv, "levelUp": lv > before}
+
+
+func plant(plot: String, crop_id: String, day: int, season = null) -> Dictionary:
+	var c = _find("crops", crop_id)
+	if c == null:
+		return _fail("unknown_crop")
+	if life["plots"].has(plot):
+		return _fail("plot_busy")
+	if season != null and c.has("seasons") and not (c["seasons"] as Array).has(season):
+		return _fail("wrong_season")
+	if not has(c["seed"], 1):
+		return _fail("missing:" + str(c["seed"]))
+	remove(c["seed"], 1)
+	life["plots"][plot] = {"crop": c["id"], "planted": day, "water": 0, "last": -1}
+	return _ok(gain_xp("farming", 1))
+
+
+func water(plot: String, day: int) -> Dictionary:
+	if not life["plots"].has(plot):
+		return _fail("empty_plot")
+	var p: Dictionary = life["plots"][plot]
+	if int(p["last"]) == day:
+		return _fail("already_watered")
+	p["last"] = day
+	p["water"] = int(p["water"]) + 1
+	return _ok()
+
+
+## Start of a day: rain / storm (Easy NPC WEATHER_INFO.waters) water every plot. Returns how many.
+func new_day(day: int, rained: bool) -> int:
+	var n := 0
+	if rained:
+		var ids: Array = life["plots"].keys()
+		ids.sort()
+		for id in ids:
+			if water(id, day)["ok"]:
+				n += 1
+	return n
+
+
+func growth(plot: String) -> float:
+	if not life["plots"].has(plot):
+		return 0.0
+	var p: Dictionary = life["plots"][plot]
+	var c = _find("crops", p["crop"])
+	return 0.0 if c == null else minf(1.0, float(p["water"]) / float(c["days"]))
+
+
+func harvest(plot: String, seed: int) -> Dictionary:
+	if not life["plots"].has(plot):
+		return _fail("empty_plot")
+	var p: Dictionary = life["plots"][plot]
+	var c = _find("crops", p["crop"])
+	if int(p["water"]) < int(c["days"]):
+		return _fail("not_ready")
+	var y: Array = c.get("yield", [1, 2])
+	_rng_a = seed & 0xFFFFFFFF
+	var n := _rint(int(y[0]), int(y[1])) + (skill_level("farming") - 1) / 3
+	if add(c["produce"], n) > 0:
+		return _fail("inventory_full")
+	life["plots"].erase(plot)
+	var r := _ok(gain_xp("farming", int(c.get("xp", 5))))
+	r["items"] = [{"item": c["produce"], "n": n}]
+	return r
+
+
+func bite_chance(spot_id: String, weather_mult := 1.0) -> float:
+	var s = _find("fishing", spot_id)
+	if s == null:
+		return 0.0
+	return minf(0.95, float(s.get("bite", 0.6)) * (1.0 + 0.05 * float(skill_level("fishing") - 1)) * weather_mult)
+
+
+func fish(spot_id: String, seed: int, weather_mult := 1.0) -> Dictionary:
+	var s = _find("fishing", spot_id)
+	if s == null:
+		return _fail("unknown_spot")
+	if skill_level("fishing") < int(s.get("minLevel", 1)):
+		return _fail("level_low:%d" % int(s["minLevel"]))
+	if s.has("tool") and not has(s["tool"], 1):
+		return _fail("missing:" + str(s["tool"]))
+	_rng_a = seed & 0xFFFFFFFF
+	if _rng_next() >= bite_chance(spot_id, weather_mult):
+		var miss := _fail("no_bite")
+		miss.merge(gain_xp("fishing", 1))
+		return miss
+	var got := roll_loot(s["loot"], seed + 1)
+	for it in got:
+		if add(it["item"], int(it["n"])) > 0:
+			return _fail("inventory_full")
+	var r := _ok(gain_xp("fishing", int(s.get("xp", 5))))
+	r["items"] = got
+	r["bite"] = true
+	return r
+
+
+func can_cook(recipe_id: String) -> Dictionary:
+	if not recipes.has(recipe_id):
+		return _fail("unknown_recipe")
+	var r: Dictionary = recipes[recipe_id]
+	if r.has("skill") and skill_level(r["skill"]) < int(r.get("level", 1)):
+		return _fail("level_low:%d" % int(r["level"]))
+	return can_craft(recipe_id, 1)
+
+
+func cook(recipe_id: String, times: int = 1) -> Dictionary:
+	if not recipes.has(recipe_id):
+		return _fail("unknown_recipe")
+	var r: Dictionary = recipes[recipe_id]
+	if r.has("skill") and skill_level(r["skill"]) < int(r.get("level", 1)):
+		return _fail("level_low:%d" % int(r["level"]))
+	var c := craft(recipe_id, times)
+	if not c["ok"]:
+		return c
+	if r.has("skill"):
+		c.merge(gain_xp(r["skill"], int(r.get("xp", 5)) * times), true)
+	return c
+
+
+func life_to_dict() -> Dictionary:
+	return life.duplicate(true)
+
+
+func life_from_dict(d: Dictionary) -> void:
+	life = {"xp": {}, "plots": {}}
+	for k in d.get("xp", {}).keys():
+		life["xp"][str(k)] = int(d["xp"][k])
+	for k in d.get("plots", {}).keys():
+		var p: Dictionary = d["plots"][k]
+		life["plots"][str(k)] = {"crop": str(p["crop"]), "planted": int(p["planted"]), "water": int(p["water"]), "last": int(p["last"])}

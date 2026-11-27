@@ -73,7 +73,7 @@ describe("HTTP API", () => {
     const h = { host: "127.0.0.1:8878" };
     expect((await app.request("/api/health", { headers: h })).status).toBe(200);
     const ws = (await (await app.request("/api/workspace", { headers: h })).json()) as { iconNames: unknown[]; atlas: { frames: Record<string, unknown> } };
-    expect(ws.iconNames.length).toBe(44);
+    expect(ws.iconNames.length).toBe(50);
     expect((await app.request("/api/atlas.png", { headers: h })).headers.get("content-type")).toBe("image/png");
     expect((await app.request("/api/icon/ketupat.png?scale=4", { headers: h })).status).toBe(200);
     const db = (await (await app.request("/api/db", { headers: h })).json()) as { db: { items: unknown[] }; errors: unknown[] };

@@ -118,6 +118,45 @@ export interface Recipe {
   outputs: Array<{ item: string; n: number }>;
   /** Seconds (informational; runtimes don't wait). */
   time?: number;
+  /** Life skill that cooks / crafts this (e.g. "cooking"); `level` is the level needed, `xp` the XP per craft. */
+  skill?: string;
+  level?: number;
+  xp?: number;
+}
+
+/** A life skill with levels: XP to reach level L is xpBase × (L−1) × L / 2. */
+export interface LifeSkill {
+  id: string;
+  name: Text;
+  icon?: string;
+  maxLevel?: number;
+  xpBase?: number;
+}
+
+/** A crop: plant `seed`, water it `days` days (rain counts), harvest `produce`. */
+export interface Crop {
+  id: string;
+  name?: Text;
+  seed: string;
+  produce: string;
+  days: number;
+  /** Easy NPC season ids it can be planted in (default: any). */
+  seasons?: string[];
+  /** Produce per harvest [min, max] (default [1, 2]); +1 per 3 farming levels above 1. */
+  yield?: [number, number];
+  xp?: number;
+}
+
+/** A fishing spot: each cast bites with chance bite × (1 + 5% per level above 1) × weather, then rolls `loot`. */
+export interface FishSpot {
+  id: string;
+  name?: Text;
+  loot: string;
+  bite?: number;
+  minLevel?: number;
+  xp?: number;
+  /** Needs this tool item in the inventory (e.g. "fishing_rod"). */
+  tool?: string;
 }
 
 export interface Rules {
@@ -141,6 +180,9 @@ export interface ItemsDoc {
   shops?: Shop[];
   loot?: LootTable[];
   recipes?: Recipe[];
+  skills?: LifeSkill[];
+  crops?: Crop[];
+  fishing?: FishSpot[];
 }
 
 /** Every workspace document merged into one database. */
@@ -150,6 +192,9 @@ export interface ItemsDb {
   shops: Shop[];
   loot: LootTable[];
   recipes: Recipe[];
+  skills: LifeSkill[];
+  crops: Crop[];
+  fishing: FishSpot[];
   /** Which file each id came from. */
   sources: Record<string, string>;
 }

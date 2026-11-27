@@ -31,6 +31,7 @@ describe.skipIf(!GODOT)("Godot export", () => {
     expect(run.stdout).toMatch(new RegExp(`^R\\| items=${db.items.length} resources_ok=${db.items.length}$`, "m"));
     expect(run.stdout).toMatch(/^P\| parity ok steps=\d+/m);
     expect(run.stdout).toMatch(/^S\| save round trip ok$/m);
+    expect(run.stdout).toMatch(/^L\| skills parity ok steps=\d+ cooking=\d+$/m);
     expect(run.stdout).toMatch(/^U\| shop_ui \w+ tiles=\d+$/m);
     const main = spawnSync(GODOT!, ["--headless", "--path", out, "--quit-after", "60"], { encoding: "utf8", timeout: 120_000 });
     expect(main.stderr + main.stdout).not.toMatch(/SCRIPT ERROR|Parse Error/);

@@ -67,7 +67,7 @@ export function checkDoc(raw: unknown, d = new Diags(), file = ""): ItemsDoc | u
       if (r.startingItems !== undefined && !Array.isArray(r.startingItems)) d.err(at("rules.startingItems"), "array of { item, n }");
     }
   }
-  for (const k of ["items", "shops", "loot", "recipes"] as const) if (raw[k] !== undefined && !Array.isArray(raw[k])) d.err(at(k), "array");
+  for (const k of ["items", "shops", "loot", "recipes", "skills", "crops", "fishing"] as const) if (raw[k] !== undefined && !Array.isArray(raw[k])) d.err(at(k), "array");
   const arr = (k: string) => (Array.isArray(raw[k]) ? (raw[k] as unknown[]) : []);
   arr("items").forEach((v, i) => {
     const p = at(`items[${i}]`);
@@ -143,6 +143,41 @@ export function checkDoc(raw: unknown, d = new Diags(), file = ""): ItemsDoc | u
       if (!Array.isArray(v[k]) || !(v[k] as unknown[]).length) d.err(`${p}.${k}`, "non-empty array of { item, n }");
       else (v[k] as unknown[]).forEach((e, j) => (!isObj(e) || typeof e.item !== "string" || !int(e.n, 1, 999)) && d.err(`${p}.${k}[${j}]`, "{ item, n ≥ 1 }"));
     }
+    if (v.skill !== undefined && (typeof v.skill !== "string" || !SAFE_ID.test(v.skill))) d.err(`${p}.skill`, "life skill id");
+    if (v.level !== undefined && !int(v.level, 1, 100)) d.err(`${p}.level`, "integer 1..100");
+    if (v.xp !== undefined && !int(v.xp, 0, 10_000)) d.err(`${p}.xp`, "integer ≥ 0");
+  });
+  arr("skills").forEach((v, i) => {
+    const p = at(`skills[${i}]`);
+    if (!isObj(v)) return d.err(p, "object");
+    if (typeof v.id !== "string" || !SAFE_ID.test(v.id)) d.err(`${p}.id`, "id: a-z, 0-9, _ or -");
+    text(d, `${p}.name`, v.name);
+    if (v.maxLevel !== undefined && !int(v.maxLevel, 1, 100)) d.err(`${p}.maxLevel`, "integer 1..100");
+    if (v.xpBase !== undefined && !int(v.xpBase, 1, 10_000)) d.err(`${p}.xpBase`, "integer ≥ 1");
+    if (v.icon !== undefined && (typeof v.icon !== "string" || !isIcon(v.icon))) d.err(`${p}.icon`, "built-in icon name");
+  });
+  arr("crops").forEach((v, i) => {
+    const p = at(`crops[${i}]`);
+    if (!isObj(v)) return d.err(p, "object");
+    if (typeof v.id !== "string" || !SAFE_ID.test(v.id)) d.err(`${p}.id`, "id: a-z, 0-9, _ or -");
+    text(d, `${p}.name`, v.name, false);
+    for (const k of ["seed", "produce"] as const) if (typeof v[k] !== "string") d.err(`${p}.${k}`, "item id");
+    if (!int(v.days, 1, 120)) d.err(`${p}.days`, "integer 1..120 (watered days to grow)");
+    if (v.seasons !== undefined && (!Array.isArray(v.seasons) || v.seasons.some((x) => typeof x !== "string"))) d.err(`${p}.seasons`, "array of Easy NPC season ids");
+    const y = v.yield;
+    if (y !== undefined && !(Array.isArray(y) && y.length === 2 && int(y[0], 1, 99) && int(y[1], y[0] as number, 99))) d.err(`${p}.yield`, "[min, max]");
+    if (v.xp !== undefined && !int(v.xp, 0, 10_000)) d.err(`${p}.xp`, "integer ≥ 0");
+  });
+  arr("fishing").forEach((v, i) => {
+    const p = at(`fishing[${i}]`);
+    if (!isObj(v)) return d.err(p, "object");
+    if (typeof v.id !== "string" || !SAFE_ID.test(v.id)) d.err(`${p}.id`, "id: a-z, 0-9, _ or -");
+    text(d, `${p}.name`, v.name, false);
+    if (typeof v.loot !== "string") d.err(`${p}.loot`, "loot table id");
+    if (v.bite !== undefined && !num(v.bite, 0.01, 1)) d.err(`${p}.bite`, "number 0.01..1");
+    if (v.minLevel !== undefined && !int(v.minLevel, 1, 100)) d.err(`${p}.minLevel`, "integer ≥ 1");
+    if (v.xp !== undefined && !int(v.xp, 0, 10_000)) d.err(`${p}.xp`, "integer ≥ 0");
+    if (v.tool !== undefined && typeof v.tool !== "string") d.err(`${p}.tool`, "item id");
   });
   return raw as unknown as ItemsDoc;
 }
@@ -150,7 +185,7 @@ export function checkDoc(raw: unknown, d = new Diags(), file = ""): ItemsDoc | u
 /** Merge documents (in order) into one database, then cross-check references and content rules. */
 export function buildDb(docs: Array<{ file: string; doc: unknown }>): { db: ItemsDb; errors: Diagnostic[]; warnings: Diagnostic[] } {
   const d = new Diags();
-  const db: ItemsDb = { rules: { ...DEFAULT_RULES, equipSlots: [...DEFAULT_RULES.equipSlots] }, items: [], shops: [], loot: [], recipes: [], sources: {} };
+  const db: ItemsDb = { rules: { ...DEFAULT_RULES, equipSlots: [...DEFAULT_RULES.equipSlots] }, items: [], shops: [], loot: [], recipes: [], skills: [], crops: [], fishing: [], sources: {} };
   let rulesFrom = "";
   for (const { file, doc: raw } of docs) {
     const before = d.errors.length;
@@ -161,7 +196,7 @@ export function buildDb(docs: Array<{ file: string; doc: unknown }>): { db: Item
       rulesFrom = file;
       db.rules = { ...db.rules, ...doc.rules } as Rules;
     }
-    for (const k of ["items", "shops", "loot", "recipes"] as const) {
+    for (const k of ["items", "shops", "loot", "recipes", "skills", "crops", "fishing"] as const) {
       for (const [i, v] of (doc[k] ?? []).entries()) {
         const key = `${k}:${v.id}`;
         if (db.sources[key]) {
@@ -204,7 +239,20 @@ export function buildDb(docs: Array<{ file: string; doc: unknown }>): { db: Item
     const p = `${where("recipes", r.id)}:recipes.${r.id}`;
     r.inputs.forEach((e, j) => ref(`${p}.inputs[${j}].item`, e.item));
     r.outputs.forEach((e, j) => ref(`${p}.outputs[${j}].item`, e.item));
+    if (r.skill && !db.skills.some((x) => x.id === r.skill)) d.err(`${p}.skill`, `unknown life skill "${r.skill}"`);
   }
+  for (const c of db.crops) {
+    const p = `${where("crops", c.id)}:crops.${c.id}`;
+    ref(`${p}.seed`, c.seed);
+    ref(`${p}.produce`, c.produce);
+  }
+  for (const f of db.fishing) {
+    const p = `${where("fishing", f.id)}:fishing.${f.id}`;
+    if (!db.loot.some((l) => l.id === f.loot)) d.err(`${p}.loot`, `unknown loot table "${f.loot}"`);
+    if (f.tool) ref(`${p}.tool`, f.tool);
+  }
+  if ((db.crops.length && !db.skills.some((x) => x.id === "farming")) || (db.fishing.length && !db.skills.some((x) => x.id === "fishing")))
+    d.warn("skills", 'crops / fishing spots give XP to the "farming" / "fishing" skills; add them to skills');
   return { db, errors: d.errors, warnings: d.warnings };
 }
 

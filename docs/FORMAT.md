@@ -74,6 +74,21 @@ mulberry32 seeded with the given seed, so the CLI, MCP, web editor, Pixi runtime
 `{ id, name, station?, inputs: [{ item, n }], outputs: [{ item, n }], time? }`. Crafting checks inputs and that the
 outputs fit in the bag, then swaps them.
 
+## life skills (`skills`, `crops`, `fishing`)
+
+- `skills: [{ id, name, icon?, maxLevel = 10, xpBase = 20 }]` — XP to reach level L is `xpBase × (L−1) × L / 2`.
+  The engine uses the ids `farming`, `fishing` and any recipe `skill` (e.g. `cooking`).
+- `crops: [{ id, name?, seed, produce, days, seasons?, yield = [1, 2], xp = 5 }]` — plant uses one `seed`; the plot
+  needs `days` watered days (one watering per day; `newDay(day, rained)` waters every plot on rain / storm days from
+  the Easy NPC calendar); harvest yields `yield` + 1 per 3 farming levels above 1. `seasons` are Easy NPC season ids.
+- `fishing: [{ id, name?, loot, bite = 0.6, minLevel?, xp = 5, tool? }]` — a cast bites when
+  `rnd < min(0.95, bite × (1 + 0.05 × (level − 1)) × weatherMult)` (`WEATHER_INFO[w].fishing` from Easy NPC), then
+  rolls the `loot` table with seed + 1. A miss still gives 1 XP.
+- recipe `skill`, `level`, `xp` — `cook(recipe)` needs that skill level and gives `xp` per craft.
+
+Runtimes: `LifeSkills` in `easyitems-core.js` (`loadItems(...).life`), Godot `Items.plant / water / new_day /
+harvest / fish / cook / skill_level / skill_progress`, signal `skill_level_up`, save with `life_to_dict()`.
+
 ## Checks
 
 `easyitems check` (and `check_items`, and every save from the editor or MCP) reports JSON paths such as

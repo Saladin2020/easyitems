@@ -99,6 +99,12 @@ npx easyitems serve                     # editor at http://127.0.0.1:8878
 Prices: buy = `stock.price` or `round(price × buyMod × tagMods)`; sell = `floor(price × sellMod)`, only for categories
 in `buys`. Full reference: [docs/FORMAT.md](docs/FORMAT.md).
 
+## Life skills
+
+Farming, fishing and cooking level up with XP (`easyitems skills`). The `life` sample adds seeds, a fishing rod,
+tilapia, ปลาเผา and ผัดผักบุ้ง (halal), two crops, two fishing spots and level-gated cooking recipes. Weather and
+seasons come from [Easy NPC](../easynpc): rain waters the plots, storms cut the bite chance.
+
 ## Export
 
 | Preset | What you get |
