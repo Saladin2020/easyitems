@@ -256,6 +256,55 @@ export const ICONS: Record<string, { th: string; en: string; draw: Draw }> = {
     g.poly([[12, 4], [5, 2], [8, 6]], C.leaf);
     g.px(8, 9, "#e8f5b0", true); g.px(9, 9, "#e8f5b0", true);
   } },
+  // ---------- life skills ----------
+  seeds: { th: "ซองเมล็ดพันธุ์", en: "Seed pouch", draw: (g) => {
+    g.poly([[6, 6], [18, 6], [19, 21], [5, 21]], "#d9b98a");
+    g.rect(6, 6, 12, 3, "#b8925e");
+    g.line(8, 4, 16, 4, "#8a6a44");
+    for (const [x, y] of [[9, 13], [13, 12], [11, 16], [15, 16], [8, 18]] as const) g.rect(x, y, 2, 1.5, "#6b4423");
+    g.poly([[12, 10], [15, 13], [12, 14]], C.leaf);
+  } },
+  fishing_rod: { th: "เบ็ดตกปลา", en: "Fishing rod", draw: (g) => {
+    g.line(4, 21, 19, 3, C.teak);
+    g.line(5, 21, 20, 3, C.woodDark);
+    g.circle(8, 17, 2.2, C.steel);
+    g.px(8, 17, C.steelLight, true);
+    g.line(20, 3, 21, 14, "#e4f6fb", true);
+    g.rect(20, 14, 2, 2, C.red);
+    g.px(21, 16, C.steelLight, true);
+  } },
+  watering_can: { th: "บัวรดน้ำ", en: "Watering can", draw: (g) => {
+    g.poly([[5, 9], [15, 9], [16, 20], [4, 20]], "#4f9a6a");
+    g.poly([[15, 13], [21, 7], [22, 8], [16, 16]], "#3f7d52");
+    g.rect(20, 5, 3, 3, "#3f7d52");
+    g.ring(10, 8, 4, 1.4, "#3f7d52");
+    g.rect(5, 12, 10, 1, "#7cc08a", true);
+    g.px(22, 9, "#7cc8e8", true); g.px(23, 11, "#7cc8e8", true);
+  } },
+  pla_nin: { th: "ปลานิล", en: "Tilapia", draw: (g) => {
+    g.ellipse(11, 12, 8, 5, "#7d8a9a");
+    g.poly([[17, 12], [22, 7], [22, 17]], "#5e6a78");
+    g.poly([[7, 7], [14, 6], [12, 9]], "#5e6a78");
+    g.ellipse(11, 14, 6, 2, "#c9d3db");
+    for (const x of [9, 12, 15]) g.line(x, 9, x - 1, 15, "#4a5562", true);
+    g.px(5, 11, C.ink, true);
+  } },
+  grilled_fish: { th: "ปลาเผา", en: "Grilled fish", draw: (g) => {
+    g.ellipse(12, 16, 11, 5, C.cream);
+    g.ellipse(12, 16, 9, 3.5, "#e8e0cf");
+    g.ellipse(11, 13, 8, 3.6, "#c9a070");
+    g.poly([[17, 13], [22, 9], [22, 17]], "#a57a4a");
+    for (const x of [8, 11, 14]) g.line(x, 11, x - 1, 15, "#6b4423", true);
+    g.px(5, 12, C.ink, true);
+    g.rect(15, 18, 3, 1.5, C.leaf);
+  } },
+  fried_morning_glory: { th: "ผัดผักบุ้ง", en: "Stir-fried morning glory", draw: (g) => {
+    g.ellipse(12, 16, 11, 5, C.cream);
+    g.ellipse(12, 15.5, 8.5, 3.5, "#4aa63a");
+    for (const [x, y] of [[7, 14], [11, 13], [15, 14], [9, 16], [14, 17]] as const) g.line(x, y, x + 3, y - 1, "#2f7a44");
+    g.rect(10, 13, 2, 1, "#e0402e"); g.rect(15, 15, 2, 1, "#e0402e");
+    g.px(12, 15, "#f4d06a", true);
+  } },
   // ---------- festival & gifts ----------
   krathong: { th: "กระทง", en: "Krathong", draw: (g) => {
     g.ellipse(12, 18, 10, 3.5, "#3f9e4a");                 // banana-trunk base

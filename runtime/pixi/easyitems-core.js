@@ -297,3 +297,131 @@ export function runScript(db, script) {
   }
   return { results, state: inv.state, stats: inv.stats() };
 }
+
+// ---------- life skills (same rules as src/shared/skills.ts and easyitems.gd life_*) ----------
+export const xpForLevel = (sk, level) => ((sk?.xpBase ?? 20) * (level - 1) * level) / 2;
+export function levelFor(sk, xp) {
+  const max = sk?.maxLevel ?? 10;
+  let l = 1;
+  while (l < max && xp >= xpForLevel(sk, l + 1)) l++;
+  return l;
+}
+
+/** Farming, fishing and cooking XP / levels over an Inventory. `life.state` is plain JSON: save it next to inv.state. */
+export class LifeSkills {
+  constructor(db, inv, state) {
+    this.db = db;
+    this.inv = inv;
+    this.state = state ? clone(state) : { xp: {}, plots: {} };
+    this.listeners = new Set();
+  }
+  onLevel(fn) {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
+  }
+  skill(id) { return (this.db.skills ?? []).find((s) => s.id === id); }
+  xp(id) { return this.state.xp[id] ?? 0; }
+  level(id) { return levelFor(this.skill(id), this.xp(id)); }
+  progress(id) {
+    const sk = this.skill(id), xp = this.xp(id), level = levelFor(sk, xp), lo = xpForLevel(sk, level);
+    return { level, xp, into: xp - lo, need: level >= (sk?.maxLevel ?? 10) ? 0 : xpForLevel(sk, level + 1) - lo };
+  }
+  gain(id, n) {
+    const before = this.level(id);
+    this.state.xp[id] = this.xp(id) + n;
+    const level = this.level(id);
+    if (level > before) for (const f of this.listeners) f(id, level);
+    return { skill: id, xp: n, level, levelUp: level > before };
+  }
+  crop(id) { return (this.db.crops ?? []).find((x) => x.id === id); }
+  plant(plot, cropId, day, season) {
+    const c = this.crop(cropId);
+    if (!c) return fail("unknown_crop");
+    if (this.state.plots[plot]) return fail("plot_busy");
+    if (season !== undefined && c.seasons && !c.seasons.includes(season)) return fail("wrong_season");
+    if (!this.inv.has(c.seed, 1)) return fail(`missing:${c.seed}`);
+    this.inv.remove(c.seed, 1);
+    this.state.plots[plot] = { crop: c.id, planted: day, water: 0, last: -1 };
+    return { ok: true, ...this.gain("farming", 1) };
+  }
+  water(plot, day) {
+    const p = this.state.plots[plot];
+    if (!p) return fail("empty_plot");
+    if (p.last === day) return fail("already_watered");
+    p.last = day;
+    p.water++;
+    return { ok: true };
+  }
+  newDay(day, rained) {
+    let n = 0;
+    if (rained) for (const id of Object.keys(this.state.plots).sort()) if (this.water(id, day).ok) n++;
+    return n;
+  }
+  growth(plot) {
+    const p = this.state.plots[plot], c = p && this.crop(p.crop);
+    return !p || !c ? 0 : Math.min(1, p.water / c.days);
+  }
+  harvest(plot, seed) {
+    const p = this.state.plots[plot];
+    if (!p) return fail("empty_plot");
+    const c = this.crop(p.crop);
+    if (p.water < c.days) return fail("not_ready");
+    const [mn, mx] = c.yield ?? [1, 2];
+    const n = rint(mulberry32(seed), mn, mx) + Math.floor((this.level("farming") - 1) / 3);
+    if (this.inv.add(c.produce, n) > 0) return fail("inventory_full");
+    delete this.state.plots[plot];
+    return { ok: true, items: [{ item: c.produce, n }], ...this.gain("farming", c.xp ?? 5) };
+  }
+  spot(id) { return (this.db.fishing ?? []).find((x) => x.id === id); }
+  biteChance(spotId, weatherMult = 1) {
+    const s = this.spot(spotId);
+    return s ? Math.min(0.95, (s.bite ?? 0.6) * (1 + 0.05 * (this.level("fishing") - 1)) * weatherMult) : 0;
+  }
+  fish(spotId, seed, weatherMult = 1) {
+    const s = this.spot(spotId);
+    if (!s) return fail("unknown_spot");
+    if (this.level("fishing") < (s.minLevel ?? 1)) return fail(`level_low:${s.minLevel}`);
+    if (s.tool && !this.inv.has(s.tool, 1)) return fail(`missing:${s.tool}`);
+    if (mulberry32(seed)() >= this.biteChance(spotId, weatherMult)) return { ok: false, reason: "no_bite", ...this.gain("fishing", 1) };
+    const items = rollLoot(this.db, s.loot, seed + 1);
+    for (const it of items) if (this.inv.add(it.item, it.n) > 0) return fail("inventory_full");
+    return { ok: true, bite: true, items, ...this.gain("fishing", s.xp ?? 5) };
+  }
+  canCook(recipeId) {
+    const r = this.db.recipes.find((x) => x.id === recipeId);
+    if (!r) return fail("unknown_recipe");
+    if (r.skill && this.level(r.skill) < (r.level ?? 1)) return fail(`level_low:${r.level}`);
+    return this.inv.canCraft(recipeId, 1);
+  }
+  cook(recipeId, times = 1) {
+    const r = this.db.recipes.find((x) => x.id === recipeId);
+    if (!r) return fail("unknown_recipe");
+    if (r.skill && this.level(r.skill) < (r.level ?? 1)) return fail(`level_low:${r.level}`);
+    const c = this.inv.craft(recipeId, times);
+    if (!c.ok) return c;
+    return r.skill ? { ok: true, items: c.items, ...this.gain(r.skill, (r.xp ?? 5) * times) } : { ok: true, items: c.items };
+  }
+}
+
+/** Replay a life-skills script (parity checks): start items, then plant / water / newday / harvest / fish / cook / xp. */
+export function runSkillsScript(db, start, script) {
+  const inv = new Inventory(db);
+  for (const [item, n] of start) inv.add(item, n);
+  const life = new LifeSkills(db, inv);
+  const results = [];
+  for (const [op, ...a] of script) {
+    let r;
+    if (op === "plant") r = life.plant(a[0], a[1], a[2], a[3]);
+    else if (op === "water") r = life.water(a[0], a[1]);
+    else if (op === "newday") { results.push(`watered:${life.newDay(a[0], a[1])}`); continue; }
+    else if (op === "harvest") r = life.harvest(a[0], a[1]);
+    else if (op === "fish") r = life.fish(a[0], a[1], a[2]);
+    else if (op === "cook") r = life.cook(a[0], 1);
+    else if (op === "xp") life.gain(a[0], a[1]);
+    if (!r) results.push("ok");
+    else results.push(`${r.ok ? "ok" : r.reason}${r.levelUp ? "+lv" : ""}${r.ok && r.items ? ":" + r.items.map((s) => `${s.item}x${s.n}`).join(",") : ""}`);
+  }
+  const counts = {};
+  for (const s of inv.state.slots) if (s) counts[s.item] = (counts[s.item] ?? 0) + s.n;
+  return { results, life: life.state, inv: Object.fromEntries(Object.entries(counts).sort()) };
+}

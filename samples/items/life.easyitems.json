@@ -1,0 +1,35 @@
+{
+  "format": "easyitems/1",
+  "id": "life",
+  "name": { "th": "ทักษะชีวิต: ปลูก ตกปลา ทำอาหาร", "en": "Life skills: farming, fishing, cooking", "ms": "Kemahiran hidup: bertani, memancing, memasak" },
+  "items": [
+    { "id": "chili_seeds", "name": { "th": "เมล็ดพริก", "en": "Chili seeds", "ms": "Benih cili" }, "category": "ingredient", "price": 10, "stack": 50, "icon": "seeds", "tags": ["seed", "farming"] },
+    { "id": "morning_glory_seeds", "name": { "th": "เมล็ดผักบุ้ง", "en": "Morning glory seeds", "ms": "Benih kangkung" }, "category": "ingredient", "price": 8, "stack": 50, "icon": "seeds", "tags": ["seed", "farming"] },
+    { "id": "watering_can", "name": { "th": "บัวรดน้ำ", "en": "Watering can", "ms": "Penyiram" }, "category": "tool", "price": 60, "stack": 1, "icon": "watering_can", "tags": ["farming"] },
+    { "id": "fishing_rod", "name": { "th": "เบ็ดตกปลา", "en": "Fishing rod", "ms": "Joran" }, "category": "tool", "price": 80, "stack": 1, "icon": "fishing_rod", "tags": ["fishing"] },
+    { "id": "pla_nin", "name": { "th": "ปลานิล", "en": "Tilapia", "ms": "Ikan tilapia" }, "category": "ingredient", "price": 30, "stack": 20, "icon": "pla_nin", "tags": ["fish", "halal"] },
+    { "id": "grilled_fish", "name": { "th": "ปลาเผา", "en": "Grilled fish", "ms": "Ikan bakar" }, "category": "food", "price": 70, "stack": 10, "icon": "grilled_fish", "tags": ["dish", "halal"], "effects": [{ "kind": "heal", "amount": 30 }, { "kind": "energy", "amount": 15 }] },
+    { "id": "fried_morning_glory", "name": { "th": "ผัดผักบุ้ง", "en": "Stir-fried morning glory", "ms": "Kangkung goreng" }, "category": "food", "price": 45, "stack": 10, "icon": "fried_morning_glory", "tags": ["dish", "halal"], "effects": [{ "kind": "heal", "amount": 20 }, { "kind": "mood", "amount": 5 }] }
+  ],
+  "loot": [
+    { "id": "canal_fish", "name": { "th": "ปลาในคลอง", "en": "Canal fish" }, "rolls": 1, "entries": [{ "item": "pla_nin", "weight": 6 }, { "item": "pla_tu", "weight": 2 }, { "item": "pla_nin", "weight": 1, "min": 2, "max": 2 }] },
+    { "id": "sea_fish", "name": { "th": "ปลาทะเล", "en": "Sea fish" }, "rolls": 1, "entries": [{ "item": "pla_tu", "weight": 5 }, { "item": "pla_nin", "weight": 2 }] }
+  ],
+  "recipes": [
+    { "id": "grilled_fish", "name": { "th": "ย่างปลาเผา", "en": "Grill fish", "ms": "Bakar ikan" }, "station": "kitchen", "time": 15, "skill": "cooking", "level": 1, "xp": 8, "inputs": [{ "item": "pla_nin", "n": 1 }, { "item": "chili", "n": 1 }], "outputs": [{ "item": "grilled_fish", "n": 1 }] },
+    { "id": "fried_morning_glory", "name": { "th": "ผัดผักบุ้งไฟแดง", "en": "Stir-fry morning glory", "ms": "Goreng kangkung" }, "station": "kitchen", "time": 10, "skill": "cooking", "level": 2, "xp": 12, "inputs": [{ "item": "morning_glory", "n": 1 }, { "item": "chili", "n": 1 }, { "item": "fish_sauce", "n": 1 }], "outputs": [{ "item": "fried_morning_glory", "n": 1 }] }
+  ],
+  "skills": [
+    { "id": "farming", "name": { "th": "เพาะปลูก", "en": "Farming", "ms": "Bertani" }, "icon": "watering_can", "maxLevel": 10, "xpBase": 20 },
+    { "id": "fishing", "name": { "th": "ตกปลา", "en": "Fishing", "ms": "Memancing" }, "icon": "fishing_rod", "maxLevel": 10, "xpBase": 20 },
+    { "id": "cooking", "name": { "th": "ทำอาหาร", "en": "Cooking", "ms": "Memasak" }, "icon": "grilled_fish", "maxLevel": 10, "xpBase": 20 }
+  ],
+  "crops": [
+    { "id": "chili", "name": { "th": "พริก", "en": "Chili", "ms": "Cili" }, "seed": "chili_seeds", "produce": "chili", "days": 3, "seasons": ["hot", "rainy"], "yield": [2, 3], "xp": 6 },
+    { "id": "morning_glory", "name": { "th": "ผักบุ้ง", "en": "Morning glory", "ms": "Kangkung" }, "seed": "morning_glory_seeds", "produce": "morning_glory", "days": 2, "seasons": ["rainy", "cool"], "yield": [1, 2], "xp": 5 }
+  ],
+  "fishing": [
+    { "id": "canal", "name": { "th": "คลองหน้าหมู่บ้าน", "en": "Village canal", "ms": "Terusan kampung" }, "loot": "canal_fish", "bite": 0.55, "xp": 5, "tool": "fishing_rod" },
+    { "id": "sea", "name": { "th": "ท่าเรือประมง", "en": "Fishing pier", "ms": "Jeti nelayan" }, "loot": "sea_fish", "bite": 0.5, "minLevel": 3, "xp": 9, "tool": "fishing_rod" }
+  ]
+}

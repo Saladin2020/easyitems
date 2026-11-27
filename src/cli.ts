@@ -9,6 +9,7 @@ import { createApp, defaultWebRoot } from "./server/app.js";
 import { resolveToken } from "./shared/requestGuard.js";
 import { itemSummary } from "./shared/db.js";
 import { Inventory, rollLoot } from "./shared/engine.js";
+import { xpForLevel } from "./shared/skills.js";
 import { ICONS, ICON_NAMES } from "./shared/icons.js";
 import { CATEGORIES, FORMAT, type Item, type ItemsDoc } from "./shared/types.js";
 import { EXPORT_PRESETS, exportItems, type ExportPreset } from "./lib/export.js";
@@ -199,6 +200,26 @@ program
       if (o.json) return console.log(JSON.stringify(out, null, 2));
       console.log(`${table} · rolls ${fmtRolls(t.rolls)} · ${t.entries.length} entries`);
       for (const r of out) console.log(`  seed ${String(r.seed).padEnd(6)} ${r.items.map((s) => `${s.item}×${s.n}`).join(", ") || "(nothing)"}`);
+    } catch (e) {
+      fail(e);
+    }
+  });
+
+program
+  .command("skills")
+  .description("Life skills (farming, fishing, cooking): XP per level, crops, fishing spots and skill recipes")
+  .option("--lang <th|en|ms>", "Language", "th")
+  .option("--workspace <path>")
+  .option("--json")
+  .action(async (o: { lang: string; workspace?: string; json?: boolean }) => {
+    try {
+      const db = await loadDbStrict(workspaceOf(o.workspace));
+      if (o.json) return console.log(JSON.stringify({ skills: db.skills, crops: db.crops, fishing: db.fishing, recipes: db.recipes.filter((r) => r.skill) }, null, 2));
+      const nm = (t?: { th: string; en: string; ms?: string }) => (t ? ((t as Record<string, string>)[o.lang] || t.en) : "");
+      for (const s of db.skills) console.log(`${s.id.padEnd(10)} ${nm(s.name).padEnd(12)} lv1..${s.maxLevel ?? 10}  XP: ${Array.from({ length: Math.min(5, (s.maxLevel ?? 10) - 1) }, (_, i) => `L${i + 2}=${xpForLevel(s, i + 2)}`).join(" ")} …`);
+      for (const c of db.crops) console.log(`  crop  ${c.id.padEnd(16)} ${c.seed} → ${c.produce} ×${(c.yield ?? [1, 2]).join("-")}  ${c.days} watered days  ${c.seasons?.join("/") ?? "any season"}  +${c.xp ?? 5}xp`);
+      for (const f of db.fishing) console.log(`  fish  ${f.id.padEnd(16)} loot ${f.loot}  bite ${f.bite ?? 0.6}  lv ${f.minLevel ?? 1}+  +${f.xp ?? 5}xp${f.tool ? `  needs ${f.tool}` : ""}`);
+      for (const r of db.recipes.filter((x) => x.skill)) console.log(`  cook  ${r.id.padEnd(16)} ${r.skill} lv ${r.level ?? 1}+  +${r.xp ?? 5}xp  ${r.inputs.map((e) => `${e.item}×${e.n}`).join(" + ")} → ${r.outputs.map((e) => `${e.item}×${e.n}`).join(", ")}`);
     } catch (e) {
       fail(e);
     }

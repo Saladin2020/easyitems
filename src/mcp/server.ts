@@ -16,13 +16,14 @@ import { z } from "zod";
 import { checkRequest, resolveToken } from "../shared/requestGuard.js";
 import { itemSummary } from "../shared/db.js";
 import { Inventory, rollLoot, runScript } from "../shared/engine.js";
+import { levelFor, runSkillsScript, xpForLevel } from "../shared/skills.js";
 import { ICON_NAMES } from "../shared/icons.js";
 import { CATEGORIES, EFFECT_KINDS, FORMAT } from "../shared/types.js";
 import { EXPORT_PRESETS, exportItems } from "../lib/export.js";
 import { itemSheetPng } from "../lib/render.js";
 import { checkWorkspace, dirs, loadDb, loadDbStrict, readDoc, resolveWorkspace, saveDoc, workspaceSummary } from "../lib/workspace.js";
 
-export const MCP_TOOL_NAMES = ["workspace_info", "list_items", "get_item", "write_items", "check_items", "render_icons", "roll_loot", "simulate", "export_items"] as const;
+export const MCP_TOOL_NAMES = ["workspace_info", "list_items", "get_item", "write_items", "check_items", "render_icons", "roll_loot", "simulate", "life_skills", "export_items"] as const;
 
 const IdSchema = z.string().regex(/^[a-z0-9][a-z0-9_-]*$/, "Use a-z, 0-9, _ or -");
 const text = (data: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] });
@@ -143,6 +144,33 @@ export function createEasyItemsMcp(workspaceRoot: string): McpServer {
         const db = await loadDbStrict(root);
         const s = seed ?? 1;
         return text({ table, rolls: Array.from({ length: times ?? 1 }, (_, i) => ({ seed: s + i, items: rollLoot(db, table, s + i) })) });
+      } catch (e) {
+        return err(msg(e));
+      }
+    },
+  );
+
+  server.registerTool(
+    "life_skills",
+    {
+      title: "Life skills",
+      description:
+        'Farming / fishing / cooking skills with XP and levels. Without ops: lists skills (XP per level), crops, fishing spots and skill recipes. With ops, replays them on a fresh inventory plus `start` items: ["plant", plot, crop, day, season?], ["water", plot, day], ["newday", day, rained], ["harvest", plot, seed], ["fish", spot, seed, weatherMult], ["cook", recipe], ["xp", skill, n]. Weather comes from Easy NPC (rain/storm water plots; WEATHER_INFO.fishing is the bite multiplier).',
+      inputSchema: {
+        ops: z.array(z.array(z.union([z.string(), z.number(), z.boolean()])).min(1)).max(500).optional(),
+        start: z.array(z.tuple([z.string(), z.number().int().min(1)])).max(50).optional(),
+      },
+    },
+    async ({ ops, start }) => {
+      try {
+        const db = await loadDbStrict(root);
+        if (ops?.length) return text(runSkillsScript(db, ops as Array<[string, ...Array<string | number | boolean>]>, start ?? []));
+        return text({
+          skills: db.skills.map((s) => ({ ...s, xpTable: Array.from({ length: (s.maxLevel ?? 10) - 1 }, (_, i) => xpForLevel(s, i + 2)), levelAt100: levelFor(s, 100) })),
+          crops: db.crops,
+          fishing: db.fishing,
+          recipes: db.recipes.filter((r) => r.skill).map((r) => ({ id: r.id, skill: r.skill, level: r.level ?? 1, xp: r.xp ?? 5, inputs: r.inputs, outputs: r.outputs })),
+        });
       } catch (e) {
         return err(msg(e));
       }

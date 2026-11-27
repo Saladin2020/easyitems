@@ -2,6 +2,7 @@ import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { canon } from "../shared/canon.js";
 import { PARITY_SCRIPT, runScript } from "../shared/engine.js";
+import { SKILLS_SCRIPT, SKILLS_START, runSkillsScript } from "../shared/skills.js";
 import { EXPORT_PRESETS, type ExportPreset, type Item, type ItemsDb, type Shop } from "../shared/types.js";
 import { FONT_DIR, RUNTIME_DIR } from "./assets.js";
 import { encodePng } from "./png.js";
@@ -373,6 +374,9 @@ const SCRIPT := ${JSON.stringify(PARITY_SCRIPT)}
 const EXPECTED_RESULTS := ${JSON.stringify(expected.results)}
 const EXPECTED_STATE := ${JSON.stringify(expected.state)}
 const EXPECTED_STATS := ${JSON.stringify(expected.stats)}
+const SKILLS_START := ${JSON.stringify(db.crops.length ? SKILLS_START : [])}
+const SKILLS_SCRIPT := ${JSON.stringify(db.crops.length ? SKILLS_SCRIPT : [])}
+const SKILLS_EXPECTED := ${JSON.stringify(db.crops.length ? runSkillsScript(db).results : [])}
 const ICON := ${a.size}
 
 var items: Node
@@ -474,6 +478,40 @@ func _initialize() -> void:
 		fail("to_dict / from_dict round trip\n  %s" % canon(items.state))
 	else:
 		print("S| save round trip ok")
+	# life skills parity
+	if SKILLS_SCRIPT.size() > 0:
+		items.reset()
+		items.life_from_dict({})
+		for st in SKILLS_START:
+			items.add(st[0], int(st[1]))
+		var sres: Array = []
+		for step in SKILLS_SCRIPT:
+			var r = null
+			match str(step[0]):
+				"plant": r = items.plant(step[1], step[2], int(step[3]), step[4])
+				"water": r = items.water(step[1], int(step[2]))
+				"newday":
+					sres.append("watered:%d" % items.new_day(int(step[1]), bool(step[2])))
+					continue
+				"harvest": r = items.harvest(step[1], int(step[2]))
+				"fish": r = items.fish(step[1], int(step[2]), float(step[3]))
+				"cook": r = items.cook(step[1], 1)
+				"xp": items.gain_xp(step[1], int(step[2]))
+			if r == null:
+				sres.append("ok")
+			else:
+				var line: String = ("ok" if r["ok"] else str(r["reason"])) + ("+lv" if r.get("levelUp", false) else "")
+				if r["ok"] and r.has("items"):
+					var parts := PackedStringArray()
+					for it in r["items"]:
+						parts.append("%sx%d" % [it["item"], int(it["n"])])
+					line += ":" + ",".join(parts)
+				sres.append(line)
+		if sres != SKILLS_EXPECTED:
+			fail("skills %s != %s" % [sres, SKILLS_EXPECTED])
+		else:
+			print("L| skills parity ok steps=%d cooking=%d" % [sres.size(), items.skill_level("cooking")])
+		items.life_from_dict({})
 	items.reset()
 	ui = load("res://easyitems/shop_ui.tscn").instantiate()
 	ui.shop_id = ${gstr(db.shops[0]?.id ?? "")}
