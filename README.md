@@ -81,7 +81,7 @@ npx easyitems serve                     # editor at http://127.0.0.1:8878
 ```
 
 `add-item <id> --th --en --icon [--ms --category --price --stack --tag]` writes `items/game.easyitems.json`.
-`icons` lists the 44 built-in icons. Set `EASYITEMS_WORKSPACE` or pass `--workspace`.
+`icons` lists the 67 built-in icons (DSK-11 added harvest, catch and forage icons; `samples/addons/activities.easyitems.json` is an Easy Activity add-on catalog to drop next to the starter). Set `EASYITEMS_WORKSPACE` or pass `--workspace`.
 
 ## The format
 
