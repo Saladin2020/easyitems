@@ -1,0 +1,609 @@
+{
+  "format": "easyitems/1",
+  "id": "activities",
+  "name": {
+    "th": "ผลผลิต ปลา และของป่า",
+    "en": "Harvest, catch and forage",
+    "ms": "Hasil tani, tangkapan dan hutan"
+  },
+  "description": {
+    "th": "ส่วนเสริมของชุดเริ่มต้น: วางคู่กับ village + life ในโฟลเดอร์ items/",
+    "en": "Add-on for the starter catalog: drop next to village + life in items/ (uses their chili, morning glory, pla_nin, pla_tu, fishing_rod)."
+  },
+  "items": [
+    {
+      "id": "bamboo_shoot",
+      "name": {
+        "th": "หน่อไม้",
+        "en": "Bamboo shoot",
+        "ms": "Rebung"
+      },
+      "category": "ingredient",
+      "price": 15,
+      "stack": 50,
+      "icon": "bamboo_shoot",
+      "tags": [
+        "forage",
+        "halal"
+      ]
+    },
+    {
+      "id": "corn",
+      "name": {
+        "th": "ข้าวโพด",
+        "en": "Corn",
+        "ms": "Jagung"
+      },
+      "category": "food",
+      "price": 18,
+      "stack": 50,
+      "icon": "corn",
+      "tags": [
+        "crop",
+        "farming",
+        "halal"
+      ]
+    },
+    {
+      "id": "corn_seeds",
+      "name": {
+        "th": "เมล็ดข้าวโพด",
+        "en": "Corn seeds",
+        "ms": "Benih jagung"
+      },
+      "category": "ingredient",
+      "price": 8,
+      "stack": 50,
+      "icon": "seeds",
+      "tags": [
+        "seed",
+        "farming"
+      ]
+    },
+    {
+      "id": "kite",
+      "name": {
+        "th": "ว่าว",
+        "en": "Kite",
+        "ms": "Wau"
+      },
+      "category": "tool",
+      "price": 60,
+      "stack": 1,
+      "icon": "kite",
+      "tags": [
+        "toy",
+        "festival"
+      ]
+    },
+    {
+      "id": "kung",
+      "name": {
+        "th": "กุ้ง",
+        "en": "Prawn",
+        "ms": "Udang"
+      },
+      "category": "ingredient",
+      "price": 40,
+      "stack": 50,
+      "icon": "kung",
+      "tags": [
+        "seafood",
+        "halal"
+      ]
+    },
+    {
+      "id": "lemongrass",
+      "name": {
+        "th": "ตะไคร้",
+        "en": "Lemongrass",
+        "ms": "Serai"
+      },
+      "category": "ingredient",
+      "price": 12,
+      "stack": 50,
+      "icon": "lemongrass",
+      "tags": [
+        "crop",
+        "farming",
+        "halal"
+      ]
+    },
+    {
+      "id": "lemongrass_cutting",
+      "name": {
+        "th": "หน่อตะไคร้",
+        "en": "Lemongrass cutting",
+        "ms": "Keratan serai"
+      },
+      "category": "ingredient",
+      "price": 6,
+      "stack": 50,
+      "icon": "lemongrass",
+      "tags": [
+        "seed",
+        "farming"
+      ]
+    },
+    {
+      "id": "mushroom",
+      "name": {
+        "th": "เห็ด",
+        "en": "Mushroom",
+        "ms": "Cendawan"
+      },
+      "category": "ingredient",
+      "price": 18,
+      "stack": 50,
+      "icon": "mushroom",
+      "tags": [
+        "forage",
+        "halal"
+      ]
+    },
+    {
+      "id": "pla_chon",
+      "name": {
+        "th": "ปลาช่อน",
+        "en": "Snakehead",
+        "ms": "Ikan haruan"
+      },
+      "category": "ingredient",
+      "price": 35,
+      "stack": 50,
+      "icon": "pla_chon",
+      "tags": [
+        "fish",
+        "halal"
+      ]
+    },
+    {
+      "id": "pla_duk",
+      "name": {
+        "th": "ปลาดุก",
+        "en": "Walking catfish",
+        "ms": "Ikan keli"
+      },
+      "category": "ingredient",
+      "price": 25,
+      "stack": 50,
+      "icon": "pla_duk",
+      "tags": [
+        "fish",
+        "halal"
+      ]
+    },
+    {
+      "id": "pla_insee",
+      "name": {
+        "th": "ปลาอินทรี",
+        "en": "King mackerel",
+        "ms": "Ikan tenggiri"
+      },
+      "category": "ingredient",
+      "price": 90,
+      "stack": 50,
+      "icon": "pla_insee",
+      "tags": [
+        "fish",
+        "halal",
+        "rare"
+      ]
+    },
+    {
+      "id": "pla_kao",
+      "name": {
+        "th": "ปลาเก๋า",
+        "en": "Grouper",
+        "ms": "Ikan kerapu"
+      },
+      "category": "ingredient",
+      "price": 80,
+      "stack": 50,
+      "icon": "pla_kao",
+      "tags": [
+        "fish",
+        "halal"
+      ]
+    },
+    {
+      "id": "pla_kapong",
+      "name": {
+        "th": "ปลากะพง",
+        "en": "Barramundi",
+        "ms": "Ikan siakap"
+      },
+      "category": "ingredient",
+      "price": 60,
+      "stack": 50,
+      "icon": "pla_kapong",
+      "tags": [
+        "fish",
+        "halal"
+      ]
+    },
+    {
+      "id": "pla_muek",
+      "name": {
+        "th": "ปลาหมึก",
+        "en": "Squid",
+        "ms": "Sotong"
+      },
+      "category": "ingredient",
+      "price": 55,
+      "stack": 50,
+      "icon": "pla_muek",
+      "tags": [
+        "seafood",
+        "halal"
+      ]
+    },
+    {
+      "id": "pla_nok_kaeo",
+      "name": {
+        "th": "ปลานกแก้ว",
+        "en": "Parrotfish",
+        "ms": "Ikan bayan"
+      },
+      "category": "ingredient",
+      "price": 50,
+      "stack": 50,
+      "icon": "pla_nok_kaeo",
+      "tags": [
+        "fish",
+        "halal"
+      ]
+    },
+    {
+      "id": "rice_seedlings",
+      "name": {
+        "th": "ต้นกล้าข้าว",
+        "en": "Rice seedlings",
+        "ms": "Anak benih padi"
+      },
+      "category": "ingredient",
+      "price": 6,
+      "stack": 50,
+      "icon": "rice_seedling",
+      "tags": [
+        "seed",
+        "farming"
+      ]
+    },
+    {
+      "id": "rice_sheaf",
+      "name": {
+        "th": "ฟ่อนข้าว",
+        "en": "Rice sheaf",
+        "ms": "Berkas padi"
+      },
+      "category": "ingredient",
+      "price": 30,
+      "stack": 50,
+      "icon": "rice_sheaf",
+      "tags": [
+        "crop",
+        "farming"
+      ]
+    },
+    {
+      "id": "sea_shell",
+      "name": {
+        "th": "เปลือกหอย",
+        "en": "Sea shell",
+        "ms": "Kulit kerang"
+      },
+      "category": "material",
+      "price": 5,
+      "stack": 50,
+      "icon": "sea_shell",
+      "tags": [
+        "forage",
+        "beach"
+      ]
+    },
+    {
+      "id": "watermelon",
+      "name": {
+        "th": "แตงโม",
+        "en": "Watermelon",
+        "ms": "Tembikai"
+      },
+      "category": "food",
+      "price": 45,
+      "stack": 50,
+      "icon": "watermelon",
+      "tags": [
+        "crop",
+        "farming",
+        "halal"
+      ]
+    },
+    {
+      "id": "watermelon_seeds",
+      "name": {
+        "th": "เมล็ดแตงโม",
+        "en": "Watermelon seeds",
+        "ms": "Benih tembikai"
+      },
+      "category": "ingredient",
+      "price": 12,
+      "stack": 50,
+      "icon": "seeds",
+      "tags": [
+        "seed",
+        "farming"
+      ]
+    }
+  ],
+  "loot": [
+    {
+      "id": "canal_bnd_fish",
+      "name": {
+        "th": "คลองหน้าบ้านนาดี",
+        "en": "Ban Na Di canal"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "item": "pla_nin",
+          "weight": 6
+        },
+        {
+          "item": "pla_chon",
+          "weight": 3
+        },
+        {
+          "item": "pla_duk",
+          "weight": 3
+        },
+        {
+          "item": "kung",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "pier_kb_fish",
+      "name": {
+        "th": "ท่าเรือกำปงบุหงา",
+        "en": "Kampung Bunga pier",
+        "ms": "Jeti Kampung Bunga"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "item": "pla_nin",
+          "weight": 6
+        },
+        {
+          "item": "kung",
+          "weight": 2
+        },
+        {
+          "item": "pla_tu",
+          "weight": 6
+        },
+        {
+          "item": "pla_kapong",
+          "weight": 3
+        },
+        {
+          "item": "pla_muek",
+          "weight": 5
+        }
+      ]
+    },
+    {
+      "id": "open_sea_fish",
+      "name": {
+        "th": "กลางทะเล",
+        "en": "Open sea",
+        "ms": "Laut lepas"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "item": "pla_tu",
+          "weight": 6
+        },
+        {
+          "item": "pla_kapong",
+          "weight": 3
+        },
+        {
+          "item": "pla_insee",
+          "weight": 3
+        },
+        {
+          "item": "pla_muek",
+          "weight": 5
+        }
+      ]
+    },
+    {
+      "id": "reef_fish",
+      "name": {
+        "th": "แนวปะการัง",
+        "en": "Coral reef",
+        "ms": "Terumbu karang"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "item": "pla_kao",
+          "weight": 3
+        },
+        {
+          "item": "pla_nok_kaeo",
+          "weight": 4
+        }
+      ]
+    },
+    {
+      "id": "deep_sea_fish",
+      "name": {
+        "th": "ทะเลลึก",
+        "en": "Deep water",
+        "ms": "Laut dalam"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "item": "pla_insee",
+          "weight": 3
+        },
+        {
+          "item": "pla_kao",
+          "weight": 3
+        },
+        {
+          "item": "pla_muek",
+          "weight": 5
+        }
+      ]
+    }
+  ],
+  "crops": [
+    {
+      "id": "rice",
+      "name": {
+        "th": "ข้าว",
+        "en": "Rice",
+        "ms": "Padi"
+      },
+      "seed": "rice_seedlings",
+      "produce": "rice_sheaf",
+      "days": 5,
+      "seasons": [
+        "rainy"
+      ],
+      "yield": [
+        2,
+        4
+      ],
+      "xp": 12
+    },
+    {
+      "id": "corn",
+      "name": {
+        "th": "ข้าวโพด",
+        "en": "Corn",
+        "ms": "Jagung"
+      },
+      "seed": "corn_seeds",
+      "produce": "corn",
+      "days": 4,
+      "seasons": [
+        "hot",
+        "cool"
+      ],
+      "yield": [
+        1,
+        3
+      ],
+      "xp": 8
+    },
+    {
+      "id": "watermelon",
+      "name": {
+        "th": "แตงโม",
+        "en": "Watermelon",
+        "ms": "Tembikai"
+      },
+      "seed": "watermelon_seeds",
+      "produce": "watermelon",
+      "days": 5,
+      "seasons": [
+        "hot"
+      ],
+      "yield": [
+        1,
+        2
+      ],
+      "xp": 11
+    },
+    {
+      "id": "lemongrass",
+      "name": {
+        "th": "ตะไคร้",
+        "en": "Lemongrass",
+        "ms": "Serai"
+      },
+      "seed": "lemongrass_cutting",
+      "produce": "lemongrass",
+      "days": 3,
+      "seasons": [
+        "hot",
+        "rainy",
+        "cool"
+      ],
+      "yield": [
+        1,
+        2
+      ],
+      "xp": 4
+    }
+  ],
+  "fishing": [
+    {
+      "id": "canal_bnd",
+      "name": {
+        "th": "คลองหน้าบ้านนาดี",
+        "en": "Ban Na Di canal"
+      },
+      "loot": "canal_bnd_fish",
+      "bite": 0.55,
+      "xp": 5,
+      "tool": "fishing_rod"
+    },
+    {
+      "id": "pier_kb",
+      "name": {
+        "th": "ท่าเรือกำปงบุหงา",
+        "en": "Kampung Bunga pier",
+        "ms": "Jeti Kampung Bunga"
+      },
+      "loot": "pier_kb_fish",
+      "bite": 0.5,
+      "xp": 5,
+      "tool": "fishing_rod"
+    },
+    {
+      "id": "open_sea",
+      "name": {
+        "th": "กลางทะเล",
+        "en": "Open sea",
+        "ms": "Laut lepas"
+      },
+      "loot": "open_sea_fish",
+      "bite": 0.62,
+      "xp": 5,
+      "tool": "fishing_rod"
+    },
+    {
+      "id": "reef",
+      "name": {
+        "th": "แนวปะการัง",
+        "en": "Coral reef",
+        "ms": "Terumbu karang"
+      },
+      "loot": "reef_fish",
+      "bite": 0.58,
+      "xp": 5,
+      "tool": "fishing_rod"
+    },
+    {
+      "id": "deep_sea",
+      "name": {
+        "th": "ทะเลลึก",
+        "en": "Deep water",
+        "ms": "Laut dalam"
+      },
+      "loot": "deep_sea_fish",
+      "bite": 0.45,
+      "xp": 5,
+      "tool": "fishing_rod"
+    }
+  ]
+}

@@ -8,8 +8,8 @@ import { itemSheetPng, packIcons } from "../src/lib/render.js";
 import { fnv1a } from "./helpers.js";
 
 describe("procedural icons", () => {
-  it("draws 50 icons at 24 and 32 px, each outlined and centred enough", () => {
-    expect(ICON_NAMES.length).toBe(50);
+  it("draws 67 icons at 24 and 32 px, each outlined and centred enough", () => {
+    expect(ICON_NAMES.length).toBe(67);
     for (const size of [24, 32]) {
       for (const n of ICON_NAMES) {
         const p = iconPixels(n, size);
@@ -31,7 +31,7 @@ describe("procedural icons", () => {
     const file = path.join(path.dirname(fileURLToPath(import.meta.url)), "golden.json");
     if (process.env.UPDATE_GOLDEN || !existsSync(file)) writeFileSync(file, `${JSON.stringify(now, null, 2)}\n`);
     expect(now).toEqual(JSON.parse(readFileSync(file, "utf8")));
-    expect(new Set(Object.values(now)).size).toBe(50);
+    expect(new Set(Object.values(now)).size).toBe(67);
   });
 
   it("packs an atlas and a sheet", () => {
@@ -40,6 +40,6 @@ describe("procedural icons", () => {
     expect(a.frames.coin).toEqual({ x: 25, y: 0, w: 24, h: 24 });
     const s = itemSheetPng(ICON_NAMES, { size: 32, scale: 2, cols: 11 });
     const d = decodePng(s.png);
-    expect([d.width, d.height]).toEqual([11 * 72, 5 * 72]);
+    expect([d.width, d.height]).toEqual([11 * 72, 7 * 72]);
   });
 });
