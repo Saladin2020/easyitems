@@ -510,6 +510,118 @@ export const ICONS: Record<string, { th: string; en: string; draw: Draw }> = {
     g.ellipse(12, 3.5, 2.2, 3, C.gold);
     g.rect(11.5, 3, 1, 2, "#fff3c4", true);
   } },
+  // DSK-11 (Easy Activity): harvest, catch and forage
+  rice_seedling: { th: "ต้นกล้าข้าว", en: "Rice seedlings", draw: (g) => {
+    g.ellipse(12, 19, 8, 3, "#6b4423");
+    for (const [x, d] of [[7, -2], [10, -1], [12, 0], [14, 1], [17, 2]] as const) g.line(x, 18, x + d * 2, 5 + Math.abs(d), d % 2 ? "#7cc860" : C.leaf);
+    g.rect(5, 18, 14, 1.5, "#9a6d43");
+  } },
+  rice_sheaf: { th: "ฟ่อนข้าว", en: "Rice sheaf", draw: (g) => {
+    for (let i = 0; i < 6; i++) g.line(8 + i * 1.6, 21, 6 + i * 2.4, 7, "#c8a040");
+    for (let i = 0; i < 5; i++) { g.ellipse(5 + i * 3, 6 + (i % 2), 1.4, 3, C.gold); }
+    g.rect(7, 14, 10, 2.5, "#8a5a2e");
+    g.px(9, 14.5, "#c49860", true);
+  } },
+  corn: { th: "ข้าวโพด", en: "Corn", draw: (g) => {
+    g.poly([[12, 3], [17, 8], [16, 19], [12, 22], [8, 19], [7, 8]], "#f0c838");
+    for (let y = 6; y < 20; y += 3) for (let x = 9; x < 16; x += 3) g.px(x + ((y / 3) % 2), y, "#d8a020", true);
+    g.poly([[5, 9], [9, 12], [11, 22], [6, 18]], "#7aa83a");
+    g.poly([[19, 9], [15, 12], [13, 22], [18, 18]], "#5f9a32");
+    g.line(12, 3, 13, 1, "#c86a3a");
+  } },
+  watermelon: { th: "แตงโม", en: "Watermelon", draw: (g) => {
+    g.ellipse(12, 13, 10, 8, "#3e9a48");
+    for (const x of [6, 10, 14, 18]) g.line(x, 6, x - 1, 20, "#245a2a", true);
+    g.ellipse(9, 10, 3, 2, "#6cc06a", true);
+    g.line(12, 5, 13, 3, "#6b4423");
+  } },
+  lemongrass: { th: "ตะไคร้", en: "Lemongrass", draw: (g) => {
+    for (const [x, c] of [[8, "#9ac860"], [11, "#7ab04a"], [14, "#9ac860"], [17, "#6aa040"]] as const) { g.line(x, 21, x - 2 + (x % 3), 3, c); g.line(x + 1, 21, x - 1 + (x % 3), 5, c); }
+    g.rect(7, 16, 11, 5, "#e8e0c0");
+    g.rect(7, 18, 11, 1, "#c8b890", true);
+  } },
+  pla_chon: { th: "ปลาช่อน", en: "Snakehead", draw: (g) => {
+    g.ellipse(11, 12, 10, 3.6, "#5a5a3a");
+    g.poly([[19, 12], [23, 8], [23, 16]], "#3c3a24");
+    g.rect(3, 8.4, 15, 1.4, "#3c3a24");
+    g.ellipse(11, 14, 8, 1.6, "#c8c49a");
+    for (const x of [7, 11, 15]) g.ellipse(x, 11, 1.4, 1, "#2e2c1a", true);
+    g.px(3, 11, C.ink, true);
+  } },
+  pla_duk: { th: "ปลาดุก", en: "Walking catfish", draw: (g) => {
+    g.ellipse(12, 12, 10, 3.4, "#4a4048");
+    g.poly([[20, 12], [23, 9], [23, 15]], "#2e282e");
+    g.ellipse(12, 14, 8, 1.4, "#9a8c88");
+    g.line(3, 12, 1, 9, "#2e282e"); g.line(3, 13, 1, 16, "#2e282e");
+    g.px(4, 11, C.cream, true);
+  } },
+  pla_kapong: { th: "ปลากะพง", en: "Barramundi", draw: (g) => {
+    g.ellipse(11, 12, 9, 5.4, "#8a9aa8");
+    g.poly([[18, 12], [23, 6], [23, 18]], "#5a6a78");
+    g.poly([[7, 7], [15, 5], [14, 8]], "#5a6a78");
+    g.ellipse(11, 14.5, 7, 2.2, "#e4ecf0");
+    g.px(4, 10, "#c83030", true); g.px(4, 11, C.ink, true);
+  } },
+  pla_insee: { th: "ปลาอินทรี", en: "King mackerel", draw: (g) => {
+    g.ellipse(11, 12, 11, 3.4, "#4a6c96");
+    g.poly([[20, 12], [23, 7], [23, 17]], "#2e4466");
+    g.ellipse(11, 13.6, 9, 1.6, "#dce6ee");
+    for (const x of [6, 9, 12, 15]) g.line(x, 10, x + 1, 12, "#9ab0c8", true);
+    g.px(2, 11, C.ink, true);
+  } },
+  pla_kao: { th: "ปลาเก๋า", en: "Grouper", draw: (g) => {
+    g.ellipse(11, 12, 9, 6, "#8a5a3a");
+    g.poly([[18, 12], [23, 7], [23, 17]], "#5a3a24");
+    g.ellipse(11, 15, 7, 2.4, "#d8b898");
+    for (const [x, y] of [[7, 9], [11, 8], [14, 10], [9, 12], [13, 13]] as const) g.circle(x, y, 1.1, "#c86a3a", true);
+    g.px(4, 10, C.ink, true);
+  } },
+  pla_nok_kaeo: { th: "ปลานกแก้ว", en: "Parrotfish", draw: (g) => {
+    g.ellipse(11, 12, 9, 5.6, "#2a9a8e");
+    g.poly([[18, 12], [23, 7], [23, 17]], "#e0608a");
+    g.ellipse(11, 14.5, 7, 2, "#9ad8c8");
+    g.poly([[2, 11], [5, 9], [5, 13]], "#f0d060");
+    g.line(8, 7, 14, 7, "#e0608a", true);
+    g.px(5, 10, C.ink, true);
+  } },
+  pla_muek: { th: "ปลาหมึก", en: "Squid", draw: (g) => {
+    g.ellipse(14, 9, 5, 7, "#e8d0c8");
+    g.poly([[14, 1], [19, 6], [9, 6]], "#c87a6a");
+    for (const x of [10, 12, 14, 16, 18]) g.line(x, 15, x + (x % 4 ? -1 : 1), 22, "#d8b0a8");
+    g.circle(12, 12, 1, C.ink, true); g.circle(16, 12, 1, C.ink, true);
+    for (const [x, y] of [[13, 6], [16, 8], [12, 9]] as const) g.px(x, y, "#c87a6a", true);
+  } },
+  kung: { th: "กุ้ง", en: "Prawn", draw: (g) => {
+    for (let i = 0; i < 6; i++) g.circle(6 + i * 2.6, 10 + Math.sin(i / 1.6) * 3, 3 - i * 0.25, i % 2 ? "#6a8cb0" : "#7a9cc0");
+    g.poly([[20, 15], [23, 12], [23, 18]], "#e06030");
+    g.line(4, 9, 1, 3, "#e06030"); g.line(5, 9, 3, 2, "#e06030");
+    g.px(5, 9, C.ink, true);
+  } },
+  sea_shell: { th: "เปลือกหอย", en: "Sea shell", draw: (g) => {
+    g.poly([[12, 4], [21, 16], [12, 20], [3, 16]], "#e8b8a0");
+    for (const x of [6, 9, 12, 15, 18]) g.line(12, 5, x, 18, "#c88870", true);
+    g.rect(9, 19, 6, 2, "#c88870");
+    g.px(12, 6, "#fff0e8", true);
+  } },
+  bamboo_shoot: { th: "หน่อไม้", en: "Bamboo shoot", draw: (g) => {
+    g.poly([[12, 2], [18, 20], [6, 20]], "#c8a060");
+    g.poly([[12, 2], [15, 12], [9, 12]], "#8a6a30");
+    g.line(8, 16, 16, 15, "#8a5a2e", true); g.line(9, 12, 15, 11, "#8a5a2e", true);
+    g.rect(6, 20, 12, 2, "#e8e0c0");
+  } },
+  mushroom: { th: "เห็ด", en: "Mushroom", draw: (g) => {
+    g.rect(10, 12, 4, 9, "#f0e8d8");
+    g.ellipse(12, 11, 8, 4.5, "#a8603a");
+    g.ellipse(10, 9, 3, 1.4, "#c8885a", true);
+    g.rect(15, 15, 3, 6, "#f0e8d8"); g.ellipse(16.5, 15, 4, 2.4, "#8a4a2a");
+  } },
+  kite: { th: "ว่าว", en: "Kite", draw: (g) => {
+    g.poly([[12, 2], [20, 10], [12, 18], [4, 10]], "#d84a3a");
+    g.poly([[12, 2], [20, 10], [12, 10]], "#3a6ab0");
+    g.poly([[4, 10], [12, 18], [12, 10]], "#f0c040");
+    g.line(12, 2, 12, 18, "#5a3a1c", true); g.line(4, 10, 20, 10, "#5a3a1c", true);
+    for (let y = 18; y < 23; y++) g.px(12 + ((y % 2) ? 1 : -1), y, C.cream, true);
+  } },
 };
 
 export const ICON_NAMES = Object.keys(ICONS);
